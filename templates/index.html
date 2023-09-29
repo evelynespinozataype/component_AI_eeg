@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Waves</title>
+</head>
+<body>
+    <h2>Brain Waves</h2>
+    <div id="output"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io();
+        let output = document.getElementById('output');
+
+        socket.on('connect', function() {
+            console.log('conectado con cliente')
+            socket.emit('mensaje', 'connected with client!');
+        });
+        socket.on('sending_brainwaves', (data) =>{
+            console.log('connected: ', data);
+            output.innerHTML += `<p>
+                    ${data.Name}
+                </p>`
+        });
+    </script>
+</body>
+</html>
