@@ -14,13 +14,13 @@
         let output = document.getElementById('output');
 
         socket.on('connect', function() {
-            console.log('conectado con cliente')
-            socket.emit('mensaje', 'connected with client!');
+            console.log('conectado con cliente web')
+            /*socket.emit('mensaje', 'connected with client!');*/
         });
         socket.on('sending_brainwaves', (data) =>{
-            console.log('connected: ', data);
+            /*console.log('connected: ', data);*/
             output.innerHTML += `<p>
-                    ${data.Name}
+                    ${JSON.stringify(data)}
                 </p>`
         });
     </script>
