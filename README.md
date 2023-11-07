@@ -5,3 +5,8 @@ https://flask-socketio.readthedocs.io/en/latest/getting_started.html#connection-
 
 Link to analize waves in python:
 https://ipython-books.github.io/101-analyzing-the-frequency-components-of-a-signal-with-a-fast-fourier-transform/
+
+
+## Star the App
+To start the application execute the following comand
+python main.py

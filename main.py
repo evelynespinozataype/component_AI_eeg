@@ -5,6 +5,7 @@ import pandas as pd
 import scipy as sp
 import scipy.fftpack
 from scipy.signal import find_peaks
+from remote import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -29,11 +30,11 @@ def calculate_emotion(countpeaks, peak2peak):
     if ((countpeaks < 20) and (peak2peak >= 0.98)):
         status = 'happy'
     else:
-        status = 'none'
+        status = 'happy'#'none'
     if ((countpeaks > 20) and (peak2peak <= 0.98)):
         status = 'sad'
     else:
-        status = 'none'
+        status = 'sad'#'none'
     return status
 
 def fouriertransform(df):
@@ -47,13 +48,16 @@ def fouriertransform(df):
     peak2peak = np.ptp(F_gamma, axis=0) #distance max peak2peak
     print("count Peaks:",countpeaks, " Peak2peak:", round(peak2peak,2)) #Periodo
     return countpeaks, peak2peak
-    
+
+def send_aquarela():
+     return 1
+
 @socketio.on('join_comp_brainwave_app', namespace='/remote')
 def handle_brainwave(data):
-	#print("--Receiving: BrainWave data: ",data)
-	socketio.emit('sending_brainwaves', data)
-	status = identify_emotionalstate(data)
-	print("---emotional state: ",status)
+    socketio.emit('sending_brainwaves', data)#send to web
+    status = identify_emotionalstate(data)
+    print("---emotional state: ",status)
+    sendValueToAquarela(status)#send to Aquarela
 
 if __name__=='__main__':
 	socketio.run(app, host='0.0.0.0', port=4000, debug=True)
