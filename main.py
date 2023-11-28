@@ -5,7 +5,9 @@ import pandas as pd
 import scipy as sp
 import scipy.fftpack
 from scipy.signal import find_peaks
+from datetime import datetime
 from remote import *
+from ai_eeg import *
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -16,9 +18,25 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
-def identify_emotionalstate(data):
-    df = pd.DataFrame(eval(data))  #eval to pass from string to a data type of 
-    df.to_csv('raw.csv', mode='a', index=False, header=False)
+def saving_file(df):
+    now = datetime.now()
+    path_name = 'data/raw_eeg_'+ now.strftime('%Y-%m-%d_%H-%M') +'.csv'
+    df.to_csv(path_name, mode='a', index=False, header=False)
+
+def recognition_emotionalstate(data):
+    df = pd.DataFrame(eval(data))
+    saving_file(df)
+    status_ft = recognition_ft(df)
+    status_svm = recognition_svm(df)
+    status = status_ft
+    status = status_svm
+    return status
+
+def recognition_svm(df):
+    status = get_prediction(df)
+    print('AI status: ',status)
+
+def recognition_ft(df):
     countpeaks, peak2peak = fouriertransform(df)
     status = calculate_emotion(countpeaks, peak2peak)
     return status
@@ -52,27 +70,12 @@ def fouriertransform(df):
 def send_aquarela():
      return 1
 
-@socketio.on('join_comp_brainwave_app', namespace='/remote')
+@socketio.on('join_comp_brainwave_app', namespace='/remote_eegapp')
 def handle_brainwave(data):
     socketio.emit('sending_brainwaves', data)#send to web
-    status = identify_emotionalstate(data)
+    status = recognition_emotionalstate(data)
     print("---emotional state: ",status)
     sendValueToAquarela(status)#send to Aquarela
 
 if __name__=='__main__':
 	socketio.run(app, host='0.0.0.0', port=4000, debug=True)
-      
-#@socketio.on('mensaje')
-#def handle_message(data):
-#    print('mensaje: ' + data)
-
-#@socketio.on('brain_data')
-#def coracao(data):
-#	print("BrainWave data: ",data)
-#	emit('messageserver',data)
-
-#@socketio.on('message')
-#def handleBrainWave(data):
-#    print("Brain Waves:",data)
-#    socketio.emit('messageserver',data)
-#socketio.emit('messageserver',[1,2,3,4,5,6])
