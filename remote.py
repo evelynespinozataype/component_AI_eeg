@@ -10,15 +10,15 @@ def on_disconnect():
     print('Disconnected from server')
 
 # Establishing a SocketIO connection to Aquarela server
-sio.connect('http://192.168.15.5:3000', namespaces=['/remoteg'])
+sio.connect('https://os037.os.ic.unicamp.br', namespaces=['/remoteg'])
 
 # Emiting the heartrate to component_aquarela
-heart_rate_flag = 1  # Feliz
-sio.emit('join_component_heartrate', heart_rate_flag, namespace='/remoteg')
+#heart_rate_flag = 1  # Feliz
+#sio.emit('join_component_heartrate', heart_rate_flag, namespace='/remoteg')
 
 # Emiting the brainwave to component_aquarela
-brain_wave_flag = 1  # happy=1, sad=0
-sio.emit('join_component_brainwave', brain_wave_flag, namespace='/remoteg')
+#brain_wave_flag = 1  # happy=1, sad=0
+#sio.emit('join_component_brainwave', brain_wave_flag, namespace='/remoteg')
 
 # Function ECG to send the Flag of emotional state in HeartRate
 def sendValueToAquarela(status):

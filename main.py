@@ -24,36 +24,36 @@ def saving_file(df):
     df.to_csv(path_name, mode='a', index=False, header=False)
 
 def recognition_emotionalstate(data):
+    cod_emotion = ''
     df = pd.DataFrame(eval(data))
     saving_file(df)
-    status_ft = recognition_ft(df)
-    status_svm = recognition_svm(df)
-    status = status_ft
-    status = status_svm
-    return status
+    emotion_ft = recognition_ft(df)
+    emotion_svm = recognition_svm(df)
+    print('FT: ',emotion_ft)
+    print('SVM: ',emotion_svm)
+    if emotion_ft == '82' or emotion_svm == '82':
+        cod_emotion = '82'
+    if emotion_ft == '84' or emotion_svm == '84':
+        cod_emotion = '84'
+    return cod_emotion
 
 def recognition_svm(df):
-    status = get_prediction(df)
-    print('AI status: ',status)
+    emotion = get_prediction(df)
 
 def recognition_ft(df):
     countpeaks, peak2peak = fouriertransform(df)
-    status = calculate_emotion(countpeaks, peak2peak)
-    return status
+    cod_emotion = calculate_emotion(countpeaks, peak2peak)
+    return cod_emotion
 
 def calculate_emotion(countpeaks, peak2peak):
     # Happy countpeaks < 20 and peak2peak >= 0.98
     # Sad countpeaks > 20 and peak2peak <= 0.98
-    status = 'none'
+    cod_emotion = ''
     if ((countpeaks < 20) and (peak2peak >= 0.98)):
-        status = 'happy'
-    else:
-        status = 'happy'#'none'
+        cod_emotion = '82'
     if ((countpeaks > 20) and (peak2peak <= 0.98)):
-        status = 'sad'
-    else:
-        status = 'sad'#'none'
-    return status
+        cod_emotion = '84'
+    return cod_emotion
 
 def fouriertransform(df):
     df_gamma = df.iloc[:, 10] # [:, 10] columna Gamma 1 (Low gamma)
@@ -73,9 +73,9 @@ def send_aquarela():
 @socketio.on('join_comp_brainwave_app', namespace='/remote_eegapp')
 def handle_brainwave(data):
     socketio.emit('sending_brainwaves', data)#send to web
-    status = recognition_emotionalstate(data)
-    print("---emotional state: ",status)
-    sendValueToAquarela(status)#send to Aquarela
+    cod_emotion = recognition_emotionalstate(data)
+    print("---emotional state: ",cod_emotion)
+    #sendValueToAquarela(cod_emotion)#send to Aquarela
 
 if __name__=='__main__':
 	socketio.run(app, host='0.0.0.0', port=4000, debug=True)
